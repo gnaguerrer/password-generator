@@ -41,6 +41,11 @@ const config: Config = {
           "900": "#364272",
           "950": "#282e4d",
         },
+        "deep-ocean": {
+          darkBlue: "#001F3E",
+          mediumBlue: "#006092",
+          lightCyan: "#CBFDFE",
+        },
       },
     },
   },
