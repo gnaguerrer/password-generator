@@ -23,3 +23,19 @@ body {
     text-wrap: balance;
   }
 }
+
+@keyframes animate-hover-heart {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+#footer-container:hover #heart-icon {
+  animation: animate-hover-heart 1s infinite;
+}

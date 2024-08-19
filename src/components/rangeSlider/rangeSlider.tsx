@@ -41,7 +41,6 @@ export const RangeSlider = (props: RangeInputProps) => {
         max: maxValue ?? 1,
       });
       const gradient = `linear-gradient(to right, ${secondaryAccent} 0%, ${primaryAccent} ${percentage}%, #d4d4d8 ${percentage}%, #d4d4d8 100%)`;
-      console.log("gradient", gradient);
       setGrandient(gradient);
     },
     [minValue, maxValue, secondaryAccent, primaryAccent]

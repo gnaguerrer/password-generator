@@ -9,7 +9,7 @@ type CheckboxProps = {
 export const Checkbox = (props: CheckboxProps) => {
   const { id, label } = props;
   return (
-    <div className="checkbox-wrapper-46">
+    <div className="checkbox-wrapper-46 text-slate-300/80">
       <input type="checkbox" id={id} className="inp-cbx" />
       <label htmlFor={id} className="cbx">
         <span>
