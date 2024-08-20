@@ -15,7 +15,6 @@ type RangeInputProps = {
   minValue?: number;
   maxValue?: number;
   className?: string;
-  showLimits?: boolean;
 };
 
 export const RangeSlider = (props: RangeInputProps) => {

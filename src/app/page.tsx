@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowPathIcon,
   DocumentDuplicateIcon,
@@ -28,10 +28,67 @@ const checkInputs = [
   },
 ];
 
+const charset = {
+  uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  lowercase: "abcdefghijklmnopqrstuvwxyz",
+  numbers: "0123456789",
+  symbols: "!@#$%^&*()_+~`|}{[]:;?><,./-=",
+};
+
+interface PasswordOptions {
+  lowercase: boolean;
+  uppercase: boolean;
+  numbers: boolean;
+  symbols: boolean;
+}
+
 export default function Home() {
   const [password, setPassword] = useState("");
+  const [options, setOptions] = useState<Partial<PasswordOptions>>({
+    lowercase: true,
+    uppercase: true,
+    numbers: true,
+    symbols: true,
+  });
   const [length, setLength] = useState(10);
-  const onGeneratePassword = () => {};
+
+  const onGeneratePassword = () => {
+    let characters = "";
+    if (options.uppercase) characters += charset.uppercase;
+    if (options.lowercase) characters += charset.lowercase;
+    if (options.numbers) characters += charset.numbers;
+    if (options.symbols) characters += charset.symbols;
+
+    const password = Array.from({ length }, () => {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      return characters[randomIndex];
+    }).join("");
+
+    setPassword(password);
+    return password;
+  };
+
+  useEffect(() => {
+    onGeneratePassword();
+  }, []);
+
+  useEffect(() => {
+    onGeneratePassword();
+  }, [options, length]);
+
+  const onCheckboxChange = (id: keyof PasswordOptions, checked: boolean) => {
+    setOptions((prev) => {
+      const updatedOptions = { ...prev, [id]: checked };
+
+      const isAtLeastOneTrue = Object.values(updatedOptions).some(Boolean);
+
+      if (!isAtLeastOneTrue) {
+        return prev;
+      }
+
+      return updatedOptions;
+    });
+  };
 
   return (
     <main className="flex h-screen flex-col items-center justify-between pt-16 px-4 lg:px-0 lg:pt-36 w-full bg-ebony-clay-950">
@@ -43,19 +100,20 @@ export default function Home() {
           Create a secure password with customizable options.
         </h5>
 
-        <div className="text-slate-300 border border-slate-400 rounded-lg w-full px-2 py-3 flex justify-between items-center lg:w-[450px] gap-10">
-          <p className="cursor-text w-full hover:text-slate-200 transition-all text-3xl">
+        <div className="text-slate-300 border border-slate-400 rounded-lg w-full px-2 py-3 flex justify-between items-center lg:w-[500px] gap-3">
+          <p className="cursor-text w-full hover:text-slate-200 transition-all text-3xl overflow-x-auto text-nowrap overflow-y-hidden scrollbar-text">
             {password}
           </p>
           <div className="flex gap-2.5">
             <button
-              className="text-slate-400 hover:text-slate-300 transition-all"
+              className="text-slate-400 hover:text-slate-300 transition-all relative"
               onClick={() => {
                 navigator.clipboard.writeText(password);
               }}
             >
               <DocumentDuplicateIcon className="w-7" />
             </button>
+
             <button
               className="text-slate-400 hover:text-slate-300 transition-all"
               onClick={onGeneratePassword}
@@ -84,7 +142,18 @@ export default function Home() {
         </div>
         <div className="py-4 w-full px-2 gap-2 flex flex-col">
           {checkInputs.map((item) => (
-            <Checkbox key={item.id} id={item.id} label={item.label} />
+            <Checkbox
+              key={item.id}
+              id={item.id}
+              label={item.label}
+              checked={Boolean(options?.[item.id as keyof PasswordOptions])}
+              onChange={(event) => {
+                onCheckboxChange(
+                  item.id as keyof PasswordOptions,
+                  event.target.checked
+                );
+              }}
+            />
           ))}
         </div>
         <button
@@ -99,7 +168,7 @@ export default function Home() {
           id="footer-container"
           className="mt-3 text-sm flex items-center px-4"
         >
-          Made with
+          Made with{" "}
           <span id="heart-icon" className="px-2 heart-icon transition-all">
             ❤️
           </span>

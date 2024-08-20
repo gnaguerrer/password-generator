@@ -6,11 +6,13 @@ type CheckboxProps = {
   label: string;
 };
 
-export const Checkbox = (props: CheckboxProps) => {
-  const { id, label } = props;
+export const Checkbox = (
+  props: CheckboxProps & React.InputHTMLAttributes<HTMLInputElement>
+) => {
+  const { id, label, ...inputProps } = props;
   return (
     <div className="checkbox-wrapper-46 text-slate-300/80">
-      <input type="checkbox" id={id} className="inp-cbx" />
+      <input type="checkbox" id={id} className="inp-cbx" {...inputProps} />
       <label htmlFor={id} className="cbx">
         <span>
           <svg viewBox="0 0 12 10" height="10px" width="12px">

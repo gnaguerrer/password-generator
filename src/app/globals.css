@@ -39,3 +39,17 @@ body {
 #footer-container:hover #heart-icon {
   animation: animate-hover-heart 1s infinite;
 }
+
+.scrollbar-text {
+  --sb-size: 0px;
+  --sb-height: 0px;
+}
+
+.scrollbar-text::-webkit-scrollbar {
+  width: var(--sb-size);
+  height: var(--sb-height);
+}
+
+#button-generate:hover #tooltip-default {
+  color: blueviolet !important;
+}
