@@ -2,7 +2,7 @@
 
 This is a **Password Generator** that allows users to create secure passwords with various customization options. You can specify the length of the password and choose to include special characters, numbers, and uppercase or lowercase letters. The app is designed with a focus on ease of use and security.
 
-![cover](/public/cover.png)
+![cover](/public/cover.jpeg)
 
 ## Features
 

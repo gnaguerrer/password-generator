@@ -8,6 +8,8 @@ import {
 import { Checkbox } from "@/components/checkbox/checkbox";
 import { GithubIcon, RangeSlider } from "@/components";
 import Link from "next/link";
+import Image from "next/image";
+import clsx from "clsx";
 
 const checkInputs = [
   {
@@ -51,6 +53,7 @@ export default function Home() {
     symbols: true,
   });
   const [length, setLength] = useState(10);
+  const [coping, setCoping] = useState(false);
 
   const onGeneratePassword = () => {
     let characters = "";
@@ -90,9 +93,25 @@ export default function Home() {
     });
   };
 
+  const handleCopy = () => {
+    setCoping(true);
+    navigator.clipboard.writeText(password);
+    setTimeout(() => {
+      setCoping(false);
+    }, 1500);
+  };
+
   return (
     <main className="flex h-screen flex-col items-center justify-between pt-16 px-4 lg:px-0 lg:pt-36 w-full bg-ebony-clay-950">
       <div className="border border-sky-500/60 px-4 py-6 rounded-md bg-deep-ocean-darkBlue flex flex-col items-center w-full lg:w-auto">
+        <Image
+          src="/lock.png"
+          alt="lock-logo"
+          sizes="100vw"
+          className="w-20 h-20 mb-5"
+          width="0"
+          height="0"
+        />
         <h1 className="flex flex-col w-full text-sky-500 text-xl">
           Password Generator
         </h1>
@@ -105,14 +124,24 @@ export default function Home() {
             {password}
           </p>
           <div className="flex gap-2.5">
-            <button
-              className="text-slate-400 hover:text-slate-300 transition-all relative"
-              onClick={() => {
-                navigator.clipboard.writeText(password);
-              }}
-            >
-              <DocumentDuplicateIcon className="w-7" />
-            </button>
+            <div className="relative group inline-block">
+              <button
+                className="text-slate-400 hover:text-slate-300 transition-all relative"
+                onClick={handleCopy}
+              >
+                <DocumentDuplicateIcon className="w-7" />
+              </button>
+              <div
+                className={clsx(
+                  "absolute items-center justify-center px-3 py-1 text-sm  text-white bg-sky-500 rounded-lg shadow-lg whitespace-nowrap",
+                  "bottom-full mb-2 left-1/2 transform -translate-x-1/2 transition-opacity duration-200",
+                  coping ? "opacity-100 visible" : "opacity-0 invisible"
+                )}
+              >
+                Copied!
+                <div className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-sky-500 rotate-45"></div>
+              </div>
+            </div>
 
             <button
               className="text-slate-400 hover:text-slate-300 transition-all"
