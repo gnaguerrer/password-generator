@@ -45,7 +45,6 @@ export const RangeSlider = (props: RangeInputProps) => {
     [minValue, maxValue, secondaryAccent, primaryAccent]
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     updateRangeGradient(value);
   }, [value]);

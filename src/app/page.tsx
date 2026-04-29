@@ -34,7 +34,7 @@ const charset = {
   uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
   lowercase: "abcdefghijklmnopqrstuvwxyz",
   numbers: "0123456789",
-  symbols: "!@#$%^&*()_+~`|}{[]:;?><,./-=",
+  symbols: "!@#$%^&*()_+-=",
 };
 
 type Mode = "random" | "pin";
@@ -91,12 +91,10 @@ export default function Home() {
     return password;
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     onGeneratePassword();
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     onGeneratePassword();
   }, [mode, options, length, customSymbols]);
@@ -113,6 +111,29 @@ export default function Home() {
 
       return updatedOptions;
     });
+  };
+
+  const getStrength = (): { level: number; label: string; color: string } => {
+    if (mode === "pin") {
+      if (length <= 4) return { level: 1, label: "Weak", color: "bg-red-500" };
+      if (length <= 6) return { level: 2, label: "Fair", color: "bg-orange-400" };
+      if (length <= 8) return { level: 3, label: "Good", color: "bg-yellow-400" };
+      return { level: 4, label: "Strong", color: "bg-green-500" };
+    }
+
+    const activeTypes = Object.values(options).filter(Boolean).length;
+    let score = 0;
+    if (length >= 8) score++;
+    if (length >= 12) score++;
+    if (length >= 16) score++;
+    if (activeTypes >= 2) score++;
+    if (activeTypes >= 3) score++;
+    if (activeTypes >= 4) score++;
+
+    if (score <= 1) return { level: 1, label: "Weak", color: "bg-red-500" };
+    if (score <= 2) return { level: 2, label: "Fair", color: "bg-orange-400" };
+    if (score <= 3) return { level: 3, label: "Good", color: "bg-yellow-400" };
+    return { level: 4, label: "Strong", color: "bg-green-500" };
   };
 
   const handleCopy = async () => {
@@ -198,6 +219,32 @@ export default function Home() {
             </button>
           </div>
         </div>
+        {(() => {
+          const { level, label, color } = getStrength();
+          return (
+            <div className="flex items-center gap-3 w-full mt-2">
+              <div className="flex gap-1 flex-1">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className={clsx(
+                      "h-1.5 flex-1 rounded-full transition-all duration-300",
+                      i <= level ? color : "bg-slate-700"
+                    )}
+                  />
+                ))}
+              </div>
+              <span className={clsx("text-xs font-medium w-12 text-right transition-all", {
+                "text-red-500": level === 1,
+                "text-orange-400": level === 2,
+                "text-yellow-400": level === 3,
+                "text-green-500": level === 4,
+              })}>
+                {label}
+              </span>
+            </div>
+          );
+        })()}
         <div className="w-full mt-3">
           <div className="w-full flex justify-between items-center">
             <span className="text-base text-slate-300/80">
@@ -209,7 +256,7 @@ export default function Home() {
           </div>
           <RangeSlider
             value={length}
-            minValue={8}
+            minValue={4}
             maxValue={24}
             onChange={(event) => {
               setLength(Number(event.target.value));
