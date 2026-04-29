@@ -110,7 +110,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex h-screen flex-col items-center justify-between pt-16 px-4 lg:px-0 lg:pt-36 w-full bg-ebony-clay-950">
+    <main className="flex h-screen flex-col items-center justify-between pt-16 px-4 lg:px-0 lg:pt-36 w-full bg-slate-900">
       <div className="border border-sky-500/60 px-4 py-6 rounded-md bg-deep-ocean-darkBlue flex flex-col items-center w-full lg:w-auto">
         <Image
           src="/lock.png"
