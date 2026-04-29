@@ -37,6 +37,8 @@ const charset = {
   symbols: "!@#$%^&*()_+~`|}{[]:;?><,./-=",
 };
 
+type Mode = "random" | "pin";
+
 interface PasswordOptions {
   lowercase: boolean;
   uppercase: boolean;
@@ -46,6 +48,7 @@ interface PasswordOptions {
 
 export default function Home() {
   const [password, setPassword] = useState("");
+  const [mode, setMode] = useState<Mode>("random");
   const [options, setOptions] = useState<Partial<PasswordOptions>>({
     lowercase: true,
     uppercase: true,
@@ -54,17 +57,26 @@ export default function Home() {
   });
   const [length, setLength] = useState(10);
   const [copying, setCopying] = useState(false);
+  const [customSymbols, setCustomSymbols] = useState(charset.symbols);
 
   const onGeneratePassword = () => {
+    if (mode === "pin") {
+      const result = Array.from(
+        { length },
+        () => charset.numbers[Math.floor(Math.random() * charset.numbers.length)]
+      ).join("");
+      setPassword(result);
+      return result;
+    }
+
     let characters = "";
     const guaranteed: string[] = [];
 
     (Object.keys(charset) as (keyof typeof charset)[]).forEach((key) => {
-      if (options[key]) {
-        characters += charset[key];
-        guaranteed.push(
-          charset[key][Math.floor(Math.random() * charset[key].length)]
-        );
+      const chars = key === "symbols" ? customSymbols : charset[key];
+      if (options[key] && chars.length > 0) {
+        characters += chars;
+        guaranteed.push(chars[Math.floor(Math.random() * chars.length)]);
       }
     });
 
@@ -79,13 +91,15 @@ export default function Home() {
     return password;
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     onGeneratePassword();
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     onGeneratePassword();
-  }, [options, length]);
+  }, [mode, options, length, customSymbols]);
 
   const onCheckboxChange = (id: keyof PasswordOptions, checked: boolean) => {
     setOptions((prev) => {
@@ -127,6 +141,31 @@ export default function Home() {
           Create a secure password with customizable options.
         </h5>
 
+        <div className="flex w-full rounded-md overflow-hidden border border-sky-500/40 mb-4">
+          <button
+            className={clsx(
+              "flex-1 py-1.5 text-sm transition-all",
+              mode === "random"
+                ? "bg-sky-500 text-white"
+                : "text-slate-400 hover:text-slate-300"
+            )}
+            onClick={() => setMode("random")}
+          >
+            Random
+          </button>
+          <button
+            className={clsx(
+              "flex-1 py-1.5 text-sm transition-all",
+              mode === "pin"
+                ? "bg-sky-500 text-white"
+                : "text-slate-400 hover:text-slate-300"
+            )}
+            onClick={() => setMode("pin")}
+          >
+            PIN
+          </button>
+        </div>
+
         <div className="text-slate-300 border border-slate-400 rounded-lg w-full px-2 py-3 flex justify-between items-center lg:w-[500px] gap-3">
           <p className="cursor-text w-full hover:text-slate-200 transition-all text-3xl overflow-x-auto text-nowrap overflow-y-hidden scrollbar-text">
             {password}
@@ -162,7 +201,7 @@ export default function Home() {
         <div className="w-full mt-3">
           <div className="w-full flex justify-between items-center">
             <span className="text-base text-slate-300/80">
-              Character length
+              {mode === "pin" ? "PIN length" : "Character length"}
             </span>
             <span className="text-3xl text-sky-500 font-semibold">
               {length}
@@ -177,24 +216,39 @@ export default function Home() {
             }}
           />
         </div>
-        <div className="py-4 w-full px-2 gap-2 flex flex-col">
-          {checkInputs.map((item) => (
-            <Checkbox
-              key={item.id}
-              id={item.id}
-              label={item.label}
-              checked={Boolean(options?.[item.id as keyof PasswordOptions])}
-              onChange={(event) => {
-                onCheckboxChange(
-                  item.id as keyof PasswordOptions,
-                  event.target.checked
-                );
-              }}
-            />
-          ))}
-        </div>
+        {mode === "random" && (
+          <div className="py-4 w-full px-2 gap-2 flex flex-col">
+            {checkInputs.map((item) => (
+              <div key={item.id} className="flex flex-col gap-1.5">
+                <Checkbox
+                  id={item.id}
+                  label={item.label}
+                  checked={Boolean(options?.[item.id as keyof PasswordOptions])}
+                  onChange={(event) => {
+                    onCheckboxChange(
+                      item.id as keyof PasswordOptions,
+                      event.target.checked
+                    );
+                  }}
+                />
+                {item.id === "symbols" && options.symbols && (
+                  <input
+                    type="text"
+                    value={customSymbols}
+                    onChange={(e) => setCustomSymbols(e.target.value)}
+                    placeholder="Enter special characters..."
+                    className="ml-7 bg-transparent border border-slate-600 rounded px-2 py-1 text-slate-300 text-sm focus:outline-none focus:border-sky-500 transition-all placeholder:text-slate-600"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
         <button
-          className="text-slate-200 transition-all bg-sky-500/80 hover:bg-sky-500/90 py-2 w-full rounded-md text-xl"
+          className={clsx(
+            "text-slate-200 transition-all bg-sky-500/80 hover:bg-sky-500/90 py-2 w-full rounded-md text-xl",
+            mode === "pin" && "mt-4"
+          )}
           onClick={onGeneratePassword}
         >
           Generate
