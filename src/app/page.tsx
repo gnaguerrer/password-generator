@@ -53,19 +53,27 @@ export default function Home() {
     symbols: true,
   });
   const [length, setLength] = useState(10);
-  const [coping, setCoping] = useState(false);
+  const [copying, setCopying] = useState(false);
 
   const onGeneratePassword = () => {
     let characters = "";
-    if (options.uppercase) characters += charset.uppercase;
-    if (options.lowercase) characters += charset.lowercase;
-    if (options.numbers) characters += charset.numbers;
-    if (options.symbols) characters += charset.symbols;
+    const guaranteed: string[] = [];
 
-    const password = Array.from({ length }, () => {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      return characters[randomIndex];
-    }).join("");
+    (Object.keys(charset) as (keyof typeof charset)[]).forEach((key) => {
+      if (options[key]) {
+        characters += charset[key];
+        guaranteed.push(
+          charset[key][Math.floor(Math.random() * charset[key].length)]
+        );
+      }
+    });
+
+    const remaining = Array.from({ length: length - guaranteed.length }, () =>
+      characters[Math.floor(Math.random() * characters.length)]
+    );
+
+    const shuffled = [...guaranteed, ...remaining].sort(() => Math.random() - 0.5);
+    const password = shuffled.join("");
 
     setPassword(password);
     return password;
@@ -93,11 +101,11 @@ export default function Home() {
     });
   };
 
-  const handleCopy = () => {
-    setCoping(true);
-    navigator.clipboard.writeText(password);
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(password);
+    setCopying(true);
     setTimeout(() => {
-      setCoping(false);
+      setCopying(false);
     }, 1500);
   };
 
@@ -135,7 +143,7 @@ export default function Home() {
                 className={clsx(
                   "absolute items-center justify-center px-3 py-1 text-sm  text-white bg-sky-500 rounded-lg shadow-lg whitespace-nowrap",
                   "bottom-full mb-2 left-1/2 transform -translate-x-1/2 transition-opacity duration-200",
-                  coping ? "opacity-100 visible" : "opacity-0 invisible"
+                  copying ? "opacity-100 visible" : "opacity-0 invisible"
                 )}
               >
                 Copied!
@@ -153,7 +161,7 @@ export default function Home() {
         </div>
         <div className="w-full mt-3">
           <div className="w-full flex justify-between items-center">
-            <span className="text-basee text-slate-300/80">
+            <span className="text-base text-slate-300/80">
               Character length
             </span>
             <span className="text-3xl text-sky-500 font-semibold">

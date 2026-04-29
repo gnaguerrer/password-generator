@@ -28,7 +28,7 @@ export const RangeSlider = (props: RangeInputProps) => {
     className,
   } = props;
 
-  const [grandient, setGrandient] = useState(
+  const [gradient, setGradient] = useState(
     "linear-gradient(to right, #d4d4d8 0%, #d4d4d8 0%, #d4d4d8 0%, #d4d4d8 100%)"
   );
 
@@ -39,12 +39,13 @@ export const RangeSlider = (props: RangeInputProps) => {
         min: minValue ?? 0,
         max: maxValue ?? 1,
       });
-      const gradient = `linear-gradient(to right, ${secondaryAccent} 0%, ${primaryAccent} ${percentage}%, #d4d4d8 ${percentage}%, #d4d4d8 100%)`;
-      setGrandient(gradient);
+      const newGradient = `linear-gradient(to right, ${secondaryAccent} 0%, ${primaryAccent} ${percentage}%, #d4d4d8 ${percentage}%, #d4d4d8 100%)`;
+      setGradient(newGradient);
     },
     [minValue, maxValue, secondaryAccent, primaryAccent]
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     updateRangeGradient(value);
   }, [value]);
@@ -53,7 +54,7 @@ export const RangeSlider = (props: RangeInputProps) => {
     <div className="relative w-full">
       <input
         style={{
-          background: grandient,
+          background: gradient,
         }}
         className={clsx(
           "w-full h-2 rounded-lg cursor-pointer transition-all range-slider shadow-lg",
